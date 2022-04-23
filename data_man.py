@@ -3,7 +3,7 @@ from glob import glob
 
 
 def load_data(path):
-    images = sorted(glob(os.path.join(path, "col/*")))
+    images = sorted(glob(os.path.join(path, "images/*")))
     masks = sorted(glob(os.path.join(path, "masks/*")))
     return images, masks
 

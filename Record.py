@@ -15,7 +15,7 @@ ap.add_argument("-o", "--output", type=str,
 args = vars(ap.parse_args())
 
 directories = [args["output"], args["output"] + '/data',
-               args["output"] + '/data/col', args["output"] + '/data/masks']
+               args["output"] + '/data/images', args["output"] + '/data/masks']
 for d in directories:
     if not os.path.exists(d):
         os.makedirs(d)
@@ -40,13 +40,13 @@ else:
         if video:
             if blink < 15:
                 cv2.circle(display_frame, (30, 30), 10, (0, 0, 255), cv2.FILLED)
-            cv2.imwrite(args["output"] + f'/data/col/frame_{timestamp}.png', frame)
+            cv2.imwrite(args["output"] + f'/data/images/frame_{timestamp}.png', frame)
         cv2.imshow('Display', display_frame)
         key = cv2.waitKey(1)
         blink = blink+1 if blink < 30 else 0
         if key == ord('q'):
             break
         if key == ord('s') and not video: # snapshot
-            cv2.imwrite(args["output"] + f'/data/col/frame_{timestamp}.png', frame)
+            cv2.imwrite(args["output"] + f'/data/images/frame_{timestamp}.png', frame)
         if key == ord('v'): # video
             video = not video

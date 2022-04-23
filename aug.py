@@ -1,21 +1,9 @@
 import os
 import cv2
-from data_loader import *
+from data_man import *
 from tqdm import tqdm
 from glob import glob
 from albumentations import CenterCrop, RandomRotate90, GridDistortion, HorizontalFlip, VerticalFlip
-
-#
-# def load_data(path):
-#     images = sorted(glob(os.path.join(path, "col/*")))
-#     masks = sorted(glob(os.path.join(path, "masks/*")))
-#     return images, masks
-#
-#
-# def create_dir(path):
-#     if not os.path.exists(path):
-#         os.makedirs(path)
-
 
 def augment_data(images, masks, save_path, augment=True):
     H = 640
@@ -29,7 +17,6 @@ def augment_data(images, masks, save_path, augment=True):
 
         name = y.split("/")[-1].split(".")
         mask_name = name[0].split("\\")[-1]
-        print(mask_name)
         mask_extn = name[1]
 
         """ Reading image and mask. """
@@ -89,20 +76,15 @@ def augment_data(images, masks, save_path, augment=True):
 """ Loading original images and masks. """
 path = "Imgs/data/"
 images, masks = load_data(path)
-print(images)
 print(f"Original Images: {len(images)} - Original Masks: {len(masks)}")
 
 """ Creating folders. """
 create_dir(os.path.join("new_data", "images"))
-create_dir("new_data/masks")
+create_dir(os.path.join("new_data", "masks"))
 
 """ Applying data augmentation. """
 augment_data(images, masks, "new_data", augment=True)
 
 """ Loading augmented images and masks. """
 images, masks = load_data("new_data")
-#print(images)
-# images2 = sorted(glob(os.path.join("new_data\\images", "col/*")))
-#print(images2)
-# masks = sorted(glob(os.path.join("new_data\\masks", "masks/*")))
 print(f"Augmented Images: {len(images)} - Augmented Masks: {len(masks)}")

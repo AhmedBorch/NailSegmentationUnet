@@ -196,7 +196,7 @@ class Annotator:
             self.root.deiconify()
             return
         subfolders = [f.path.split('\\')[1] for f in scandir(folder_selected) if f.is_dir()]
-        if all(sf in subfolders for sf in ['col', 'masks']):
+        if all(sf in subfolders for sf in ['images', 'masks']):
             self.curr_dir = folder_selected
             existing_files = {}
             csvpath = path.join(folder_selected, 'Annotations.csv')
@@ -208,7 +208,7 @@ class Annotator:
                         for temp in row[2:]:
                             existing_files[row[0]].append(read_list(temp))
 
-            all_files = listdir(path.join(folder_selected, 'col'))
+            all_files = listdir(path.join(folder_selected, 'images'))
             extensions = ('.png', '.jpg', '.jpeg')
             img_files = [f for f in all_files if f.endswith(extensions)]
             for imgf in img_files:
@@ -243,7 +243,7 @@ class Annotator:
         """
         selection = self.listbox.curselection()[0]
         fpath = self.listbox.get(selection)
-        impath = path.join(self.curr_dir, 'col', fpath)
+        impath = path.join(self.curr_dir, 'images', fpath)
         data = self.files[fpath]
         landmarks = None
         exists = False
@@ -447,7 +447,7 @@ class Annotator:
                     if d[0] == -1:
                         to_remove_keys.append(f)
                         to_remove_idxs.append(idx)
-                        for rempath in [path.join(self.curr_dir, 'col', f), path.join(self.curr_dir, 'depthi', f), path.join(self.curr_dir, 'depth', f)]:
+                        for rempath in [path.join(self.curr_dir, 'images', f), path.join(self.curr_dir, 'depthi', f), path.join(self.curr_dir, 'depth', f)]:
                             remove(rempath)
                         continue
                     if d[0] == 1:

@@ -1,14 +1,14 @@
 from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
-from keras.callbacks import ModelCheckpoint, LearningRateScheduler
-from keras import backend as keras
+
 
 
 def CreateUnetModule(pretrained_weights=None, input_size=(64, 64, 3)):
-    input = Input(input_size)
+    inputs = Input(input_size)
+    print(inputs)
     #the conv layers takes in floats, so we convert the pixel values
-    floatInput = Lambda(lambda x: x/255)(input)
+    floatInput = Lambda(lambda x: x/255)(inputs)
     conv1 = Conv2D(16, 3, activation='relu', padding='same', kernel_initializer='he_normal')(floatInput)
     conv1 = Dropout(0.1)(conv1)
     conv1 = Conv2D(16, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv1)
@@ -59,12 +59,12 @@ def CreateUnetModule(pretrained_weights=None, input_size=(64, 64, 3)):
 
     output = Conv2D(1, 1, activation='sigmoid')(conv9)
 
-    model = Model(input=input, output=output)
+    model = Model(inputs, output)
 
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model.summary()
 
-    if (pretrained_weights):
-        model.load_weights(pretrained_weights)
+    # if (pretrained_weights):
+    #     model.load_weights(pretrained_weights)
 
     return model

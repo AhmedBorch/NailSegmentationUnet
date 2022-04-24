@@ -4,6 +4,7 @@ import model
 import numpy as np
 import random
 from model import *
+from keras import backend as keras
 from data import *
 from skimage.io import imread, imshow
 from skimage.transform import resize
@@ -54,9 +55,9 @@ print("Done!")
 if __name__ == '__main__':
     unetModule = CreateUnetModule(None, (IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS))
 
-    # ModuleCheckpoint
-    checkpointer = keras.callbacks.ModelCheckpoint('model_for_nails.h5', verbose=1, save_best_only=True)
-    callbacks = [keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'), keras.callbacks.TensorBoard(log_dir='logs')]
+    callbacks = [keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'),
+                 keras.callbacks.ModelCheckpoint('model_for_nails.h5', verbose=1, save_best_only=True),
+                 keras.callbacks.TensorBoard(log_dir='logs')]
     # logs is the name of dir we're saving in
     ###########################
 

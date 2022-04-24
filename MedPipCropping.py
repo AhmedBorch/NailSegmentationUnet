@@ -36,7 +36,7 @@ def cropper(images, masks, save_path):
 
         """ Reading image and mask. """
         img = cv2.imread(x, cv2.IMREAD_COLOR)
-        msk = cv2.imread(y, cv2.IMREAD_COLOR)
+        msk = cv2.imread(y)
         # img = cv2.imread(os.path.join(path, "images", "IMG12.jpg"))
         # msk = cv2.imread(os.path.join(path, "masks", "Mask12.jpg"))
 

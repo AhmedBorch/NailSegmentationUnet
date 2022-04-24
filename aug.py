@@ -21,7 +21,7 @@ def augment_data(images, masks, save_path, augment=True):
 
         """ Reading image and mask. """
         x = cv2.imread(x, cv2.IMREAD_COLOR)
-        y = cv2.imread(y, cv2.IMREAD_COLOR)
+        y = cv2.imread(y)
 
         """ Augmentation """
         if augment == True:

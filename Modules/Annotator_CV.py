@@ -371,7 +371,7 @@ class GUI:
         if key == ord('f'):  # Flip
             self.flip()
 
-        if key == ord(' '):  # Reset
+        if key == ord('x'):  # Reset
             self.reset()
 
         return False

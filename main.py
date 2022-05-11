@@ -51,16 +51,19 @@ print("reading the training masks")
 filler(test_ids, X_test, True)
 print("Done!")
 
+callbackfile = "saved_models/weights-improvement-{epoch:02}-{val_acc:.2f}.hdf5"
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     unetModule = CreateUnetModule(None, (IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS))
-
-    callbacks = [keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'),
-                 keras.callbacks.ModelCheckpoint('model_for_nails.h5', verbose=1, save_best_only=True),
-                 keras.callbacks.TensorBoard(log_dir='logs')]
+    # mode is max because we are monitoring the val_acc (it should be min for val_loss)
+    from keras.callbacks import ModelCheckpoint
+    callbacks_list = [ModelCheckpoint(callbackfile, monitor='val_acc', verbose=1, save_best_only=True,
+                                                mode='max')]
+                 # keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'),
+                 #keras.callbacks.TensorBoard(log_dir='logs')
     # logs is the name of dir we're saving in
     ###########################
 
-    results = unetModule.fit(X_train, Y_train, validation_split=0.1, batch_size=16, epochs=25, callbacks=callbacks)
-
+    results = unetModule.fit(X_train, Y_train, validation_split=0.1, batch_size=16, epochs=25, callbacks=callbacks_list)
+    model.save('fingernailDetectModel.h5')
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

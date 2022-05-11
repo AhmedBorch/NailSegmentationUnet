@@ -1,13 +1,23 @@
 import os
 import cv2
+import numpy as np
+import prespectiveAug
 from data_man import *
 from tqdm import tqdm
-from glob import glob
-from albumentations import CenterCrop, RandomRotate90, GridDistortion, HorizontalFlip, VerticalFlip
+from skimage.util import random_noise
+from albumentations import RandomRotate90, GridDistortion, HorizontalFlip, VerticalFlip
+
+
+def rotate_image(image, angle):
+  image_center = tuple(np.array(image.shape[1::-1]) / 2)
+  rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+  result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+  return result
+
 
 def augment_data(images, masks, save_path, augment=True):
-    H = 640
-    W = 480
+    W = 1280
+    H = 960
 
     for x, y in tqdm(zip(images, masks), total=len(images)):
         name = x.split("/")[-1].split(".")
@@ -25,15 +35,19 @@ def augment_data(images, masks, save_path, augment=True):
 
         """ Augmentation """
         if augment == True:
-            aug = CenterCrop(H, W, p=1.0)
-            augmented = aug(image=x, mask=y)
-            x1 = augmented['image']
-            y1 = augmented['mask']
+            # Add salt-and-pepper noise to the image.
+            noise_img = random_noise(x, mode='s&p', amount=0.01)
+            # The above function returns a floating-point image
+            # on the range [0, 1], thus we changed it to 'uint8 and from [0,255]
+            x1 = np.array(255 * noise_img, dtype='uint8')
+            y1 = y
 
-            aug = RandomRotate90(p=1.0)
-            augmented = aug(image=x, mask=y)
-            x2 = augmented['image']
-            y2 = augmented['mask']
+            # aug = RandomRotate90(p=1.0)
+            # augmented = aug(image=x, mask=y)
+            # x2 = augmented['image']
+            # y2 = augmented['mask']
+            x2 = cv2.rotate(x, cv2.ROTATE_90_CLOCKWISE)
+            y2 = cv2.rotate(y, cv2.ROTATE_90_CLOCKWISE)
 
             aug = GridDistortion(p=1.0)
             augmented = aug(image=x, mask=y)
@@ -50,8 +64,20 @@ def augment_data(images, masks, save_path, augment=True):
             x5 = augmented['image']
             y5 = augmented['mask']
 
-            save_images = [x, x1, x2, x3, x4, x5]
-            save_masks = [y, y1, y2, y3, y4, y5]
+            x6 = prespectiveAug.WrapImg(x, 1)
+            y6 = prespectiveAug.WrapImg(y, 1)
+
+            x7 = prespectiveAug.WrapImg(x, 2)
+            y7 = prespectiveAug.WrapImg(y, 2)
+
+            x8 = rotate_image(x, 15)
+            y8 = rotate_image(y, 15)
+
+            x9 = cv2.blur(x, (5, 5))
+            y9 = y
+
+            save_images = [x, x1, x2, x3, x4, x5, x6, x7, x8, x9]
+            save_masks = [y, y1, y2, y3, y4, y5, y6, y7, y8, y9]
         else:
             save_images = [x]
             save_masks = [y]

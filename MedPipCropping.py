@@ -46,21 +46,25 @@ def dynamicCrop(image_folder, img, image_name, image_extn, mask_folder, msk, mas
         ydiff_up = 960 - y
         ydiff_down = y
 
-
-        if 32 < x < 1280-32 and 32 < y < 960-32 and 32 < xdiff_right and 32 < xdiff_left:
+        if 32 < ydiff_up and 32 < ydiff_down and 64 < xdiff_right and 64 < xdiff_left:
             croppedTip = img[y - pad:y + pad, x - pad:x + pad]
             croppedMask = msk[y - pad:y + pad, x - pad:x + pad]
             cv2.imwrite(os.path.join(save_path, image_folder, tmp_img_name), croppedTip)
             cv2.imwrite(os.path.join(save_path, mask_folder, tmp_mask_name), croppedMask)
         else:
-            croppedTip = img[y - min(ydiff_down, pad):y + min(ydiff_up, pad),
-                         x - min(xdiff_left, pad):x + min(xdiff_right, pad)]
-            croppedTip = cv2.resize(croppedTip, (2*pad, 2*pad), interpolation=cv2.INTER_AREA)
-            croppedMask = msk[y - min(ydiff_down, pad):y + min(ydiff_up, pad),
-                          x - min(xdiff_left, pad):x + min(xdiff_right, pad)]
-            croppedMask = cv2.resize(croppedMask, (2 * pad, 2 * pad), interpolation=cv2.INTER_AREA)
-            cv2.imwrite(os.path.join(save_path, image_folder, tmp_img_name), croppedTip)
-            cv2.imwrite(os.path.join(save_path, mask_folder, tmp_mask_name), croppedMask)
+            try:
+                croppedTip = img[y - min(ydiff_down, pad):y + min(ydiff_up, pad),
+                             x - min(xdiff_left, pad):x + min(xdiff_right, pad)]
+                croppedTip = cv2.resize(croppedTip, (2*pad, 2*pad), interpolation=cv2.INTER_AREA)
+                croppedMask = msk[y - min(ydiff_down, pad):y + min(ydiff_up, pad),
+                              x - min(xdiff_left, pad):x + min(xdiff_right, pad)]
+                croppedMask = cv2.resize(croppedMask, (2 * pad, 2 * pad), interpolation=cv2.INTER_AREA)
+                cv2.imwrite(os.path.join(save_path, image_folder, tmp_img_name), croppedTip)
+                cv2.imwrite(os.path.join(save_path, mask_folder, tmp_mask_name), croppedMask)
+            except cv2.error:
+                print("can't process image: ", tmp_img_name)
+
+
 
 
 
@@ -96,8 +100,6 @@ def cropper(images, masks, save_path):
         """ Reading image and mask. """
         img = cv2.imread(x, cv2.IMREAD_COLOR)
         msk = cv2.imread(y)
-        # img = cv2.imread(os.path.join(path, "images", "IMG12.jpg"))
-        # msk = cv2.imread(os.path.join(path, "masks", "Mask12.jpg"))
 
         """ cropping """
         # hands model only uses RGB
@@ -124,16 +126,7 @@ def cropper(images, masks, save_path):
 
             dynamicCrop(image_folder, img, image_name, image_extn, mask_folder, msk, mask_name, mask_extn, lmList,
                         handedness)
-            # while i <= 20:
-            #     tipPosition = lmList[i][1:]
-            #     croppedTip = img[tipPosition[1]-pad:tipPosition[1]+pad, tipPosition[0]-pad:tipPosition[0]+pad]
-            #     croppedMask = msk[tipPosition[1]-pad:tipPosition[1]+pad, tipPosition[0]-pad:tipPosition[0]+pad]
-            #     tmp_img_name = f"{image_name}_{i}.{image_extn}"
-            #     tmp_mask_name = f"{mask_name}_{i}.{mask_extn}"
-            #
-            #     cv2.imwrite(os.path.join(save_path, image_folder, tmp_img_name), croppedTip)
-            #     cv2.imwrite(os.path.join(save_path, mask_folder, tmp_mask_name), croppedMask)
-            #     i += 4
+
 
 """ Loading all images and masks. """
 path = "new_data"

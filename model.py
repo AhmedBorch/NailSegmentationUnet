@@ -64,7 +64,7 @@ def CreateUnetModule(pretrained_weights=None, input_size=(64, 64, 3)):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model.summary()
 
-    # if (pretrained_weights):
-    #     model.load_weights(pretrained_weights)
+    if pretrained_weights:
+        model.load_weights(pretrained_weights)
 
     return model
